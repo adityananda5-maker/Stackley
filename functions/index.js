@@ -1,65 +1,59 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
-const Stripe = require("stripe");
+const crypto = require("crypto");
 
 admin.initializeApp();
 const db = admin.firestore();
-const stripe = Stripe(functions.config().stripe.secret);
-const PRICE_ID = functions.config().stripe.price_id;
 
-// Called from the frontend when the user clicks "Upgrade"
-exports.createCheckoutSession = functions.https.onCall(async (data, context) => {
-  if (!context.auth) {
-    throw new functions.https.HttpsError("unauthenticated", "You must be logged in.");
-  }
-  const uid = context.auth.uid;
-  const email = context.auth.token.email;
+const PADDLE_WEBHOOK_SECRET = functions.config().paddle.webhook_secret;
 
-  const session = await stripe.checkout.sessions.create({
-    mode: "subscription",
-    payment_method_types: ["card"],
-    customer_email: email,
-    client_reference_id: uid,
-    line_items: [{ price: PRICE_ID, quantity: 1 }],
-    success_url: data.successUrl,
-    cancel_url: data.cancelUrl,
-  });
+// Verifies that a webhook actually came from Paddle, not an impersonator
+function verifyPaddleSignature(rawBody, signatureHeader, secret) {
+  if (!signatureHeader) return false;
+  const parts = Object.fromEntries(
+    signatureHeader.split(";").map((p) => p.split("="))
+  );
+  const { ts, h1 } = parts;
+  if (!ts || !h1) return false;
+  const signedPayload = `${ts}:${rawBody}`;
+  const expected = crypto
+    .createHmac("sha256", secret)
+    .update(signedPayload)
+    .digest("hex");
+  return expected === h1;
+}
 
-  return { url: session.url };
-});
+// Called automatically by Paddle when a payment event happens
+exports.paddleWebhook = functions.https.onRequest(async (req, res) => {
+  const signature = req.headers["paddle-signature"];
+  const rawBody = req.rawBody.toString();
 
-// Called automatically by Stripe when a payment event happens
-exports.stripeWebhook = functions.https.onRequest(async (req, res) => {
-  const sig = req.headers["stripe-signature"];
-  let event;
-  try {
-    event = stripe.webhooks.constructEvent(
-      req.rawBody,
-      sig,
-      functions.config().stripe.webhook_secret
-    );
-  } catch (err) {
-    console.error("Webhook signature failed", err);
-    return res.status(400).send(`Webhook Error: ${err.message}`);
+  if (!verifyPaddleSignature(rawBody, signature, PADDLE_WEBHOOK_SECRET)) {
+    console.error("Invalid Paddle signature");
+    return res.status(400).send("Invalid signature");
   }
 
-  if (event.type === "checkout.session.completed") {
-    const session = event.data.object;
-    const uid = session.client_reference_id;
+  const event = req.body;
+
+  if (event.event_type === "transaction.completed") {
+    const uid = event.data?.custom_data?.uid;
+    const customerId = event.data?.customer_id;
     if (uid) {
       await db.collection("users").doc(uid).set(
-        { plan: "paid", stripeCustomerId: session.customer },
+        { plan: "paid", paddleCustomerId: customerId },
         { merge: true }
       );
     }
   }
 
-  if (event.type === "customer.subscription.deleted") {
-    const sub = event.data.object;
-    const snap = await db.collection("users")
-      .where("stripeCustomerId", "==", sub.customer).get();
-    snap.forEach(doc => doc.ref.set({ plan: "free" }, { merge: true }));
+  if (event.event_type === "subscription.canceled") {
+    const customerId = event.data?.customer_id;
+    const snap = await db
+      .collection("users")
+      .where("paddleCustomerId", "==", customerId)
+      .get();
+    snap.forEach((doc) => doc.ref.set({ plan: "free" }, { merge: true }));
   }
 
-  res.json({ received: true });
+  res.status(200).json({ received: true });
 });
