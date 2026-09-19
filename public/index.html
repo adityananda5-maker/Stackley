@@ -1,9 +1,10 @@
-1`1<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Stackley — see what your AI tools actually cost you</title>
+<script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,450;9..144,560;9..144,650&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -102,28 +103,35 @@
     onAuthStateChanged, signOut
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
   import {
-    getFirestore, doc, getDoc, setDoc, collection, addDoc, deleteDoc,
+    getFirestore, doc, setDoc, collection, addDoc, deleteDoc,
     onSnapshot, query
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-  import {
-    getFunctions, httpsCallable
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-functions.js";
 
-  // ====== PASTE YOUR FIREBASE CONFIG HERE (from Firebase console) ======
+  // ====== PASTE YOUR FIREBASE CONFIG HERE ======
   const firebaseConfig = {
-      apiKey: ,
-  authDomain: ,
-  projectId: ,
-  storageBucket: ,
-  messagingSenderId:,
-  appId: ,
-  measurementId:  
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT",
+    storageBucket: "YOUR_PROJECT.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
   };
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
-  const functions = getFunctions(app);
+
+  // ====== PADDLE SETUP ======
+  Paddle.Environment.set("sandbox");
+  Paddle.Initialize({
+    token: "test_6b3e64707b584b7f27cefdb7371",
+    eventCallback: function (data) {
+      if (data.name === "checkout.completed") {
+        alert("Thanks! Your upgrade is processing — this page will update shortly.");
+      }
+    }
+  });
+  const PADDLE_PRICE_ID = "pri_01m2vdbbyezgv71z1v1z6bk224";
 
   let isSignup = false;
   let currentUid = null;
@@ -224,17 +232,12 @@
     e.target.reset();
   });
 
-  document.getElementById('upgradeBtn').addEventListener('click', async () => {
-    const createCheckoutSession = httpsCallable(functions, 'createCheckoutSession');
-    try {
-      const result = await createCheckoutSession({
-        successUrl: window.location.href,
-        cancelUrl: window.location.href
-      });
-      window.location.href = result.data.url;
-    } catch (err) {
-      alert('Could not start checkout: ' + err.message);
-    }
+  document.getElementById('upgradeBtn').addEventListener('click', () => {
+    Paddle.Checkout.open({
+      items: [{ priceId: PADDLE_PRICE_ID, quantity: 1 }],
+      customer: { email: auth.currentUser.email },
+      customData: { uid: currentUid }
+    });
   });
 </script>
 </body>
