@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stackley — see what your AI tools actually cost you</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,450;9..144,560;9..144,650&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#EFF5F1; --paper:#FFFFFF; --ink:#241F26; --ink-soft:#75707C; --line:#E3E0E6;
+    --coral:#E35D3F; --coral-soft:#FBE6DF; --teal:#2E8B74; --teal-soft:#E1F1EA;
+    --amber:#D9A441; --amber-soft:#FBF0DC; --radius:14px; --radius-sm:9px;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:'Manrope',sans-serif; }
+  .wrap { max-width:1040px; margin:0 auto; padding:32px 20px 100px; }
+  .wordmark { font-family:'Fraunces',serif; font-size:23px; font-weight:650; }
+  .wordmark span { color:var(--coral); }
+  .panel { background:var(--paper); border:1px solid var(--line); border-radius:var(--radius); padding:26px; margin-bottom:20px; }
+  .panel h2 { font-family:'Fraunces',serif; font-weight:600; font-size:19px; margin:0 0 4px; }
+  .desc { color:var(--ink-soft); font-size:13px; margin-bottom:18px; }
+  input, select { width:100%; font-family:'Manrope'; font-size:14px; padding:10px 12px; border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--bg); color:var(--ink); }
+  button { font-family:'Manrope'; font-weight:700; font-size:13px; padding:10px 16px; border-radius:var(--radius-sm); border:none; cursor:pointer; background:var(--coral); color:white; }
+  button.teal { background:var(--teal); }
+  button.ghost { background:transparent; color:var(--ink-soft); border:1px solid var(--line); }
+  .hero-number { font-family:'Fraunces',serif; font-size:clamp(46px,7vw,62px); font-weight:560; }
+  .field { margin-bottom:12px; }
+  .field label { display:block; font-size:12px; color:var(--ink-soft); margin-bottom:5px; font-weight:600; }
+  #authScreen { max-width:380px; margin:80px auto; }
+  #appScreen { display:none; }
+  .error { color:var(--coral); font-size:13px; margin-top:8px; }
+  .top { display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; }
+  .plan-pill { font-size:12px; font-weight:700; padding:6px 12px; border-radius:20px; background:var(--ink); color:var(--paper); }
+  .plan-pill.paid { background:var(--teal); }
+  .sub-row { display:flex; justify-content:space-between; padding:12px 0; border-top:1px solid var(--line); }
+  .sub-row:first-of-type { border-top:none; }
+  .empty { color:var(--ink-soft); font-size:13px; padding:24px 0; text-align:center; border:1.5px dashed var(--line); border-radius:var(--radius-sm); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- LOGIN / SIGNUP -->
+  <div id="authScreen">
+    <div class="panel">
+      <div class="wordmark" style="margin-bottom:18px;">stack<span>ley</span></div>
+      <h2 id="authTitle">Log in</h2>
+      <div class="desc">See what your AI tools actually cost you.</div>
+      <div class="field"><label>Email</label><input type="email" id="authEmail"></div>
+      <div class="field"><label>Password</label><input type="password" id="authPassword"></div>
+      <button id="authSubmit" style="width:100%;">Log in</button>
+      <div class="error" id="authError"></div>
+      <p style="font-size:13px; margin-top:14px;">
+        <a href="#" id="authToggle" style="color:var(--coral);">Need an account? Sign up</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- MAIN APP -->
+  <div id="appScreen">
+    <div class="top">
+      <div class="wordmark">stack<span>ley</span></div>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <span class="plan-pill" id="planPill">Free plan</span>
+        <button class="ghost" id="logoutBtn">Log out</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="desc" style="margin-bottom:4px;">Total AI spend</div>
+      <div class="hero-number" id="totalSpend">$0</div>
+      <div style="margin-top:16px;">
+        <button class="teal" id="upgradeBtn">Upgrade to Plus — $6/mo</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Add a tool</h2>
+      <div class="desc">Name, monthly price, and when it renews.</div>
+      <form id="addForm">
+        <div class="field"><label>Tool name</label><input type="text" id="nameInput" required></div>
+        <div class="field"><label>Price / month ($)</label><input type="number" step="0.01" id="priceInput" required></div>
+        <div class="field"><label>Renews on</label><input type="date" id="dateInput"></div>
+        <button type="submit" id="addBtn">Add tool</button>
+      </form>
+    </div>
+
+    <div class="panel">
+      <h2>Your stack</h2>
+      <div id="subList"></div>
+    </div>
+  </div>
+
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import {
+    getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+    onAuthStateChanged, signOut
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import {
+    getFirestore, doc, getDoc, setDoc, collection, addDoc, deleteDoc,
+    onSnapshot, query
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import {
+    getFunctions, httpsCallable
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-functions.js";
+
+  // ====== PASTE YOUR FIREBASE CONFIG HERE (from Firebase console) ======
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT",
+    storageBucket: "YOUR_PROJECT.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const functions = getFunctions(app);
+
+  let isSignup = false;
+  let currentUid = null;
+  let unsubSubs = null;
+
+  document.getElementById('authToggle').addEventListener('click', (e) => {
+    e.preventDefault();
+    isSignup = !isSignup;
+    document.getElementById('authTitle').textContent = isSignup ? 'Sign up' : 'Log in';
+    document.getElementById('authSubmit').textContent = isSignup ? 'Sign up' : 'Log in';
+    document.getElementById('authToggle').textContent = isSignup ? 'Already have an account? Log in' : 'Need an account? Sign up';
+  });
+
+  document.getElementById('authSubmit').addEventListener('click', async () => {
+    const email = document.getElementById('authEmail').value.trim();
+    const password = document.getElementById('authPassword').value;
+    const errEl = document.getElementById('authError');
+    errEl.textContent = '';
+    try {
+      if (isSignup) {
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        await setDoc(doc(db, 'users', cred.user.uid), { email, plan: 'free' });
+      } else {
+        await signInWithEmailAndPassword(auth, email, password);
+      }
+    } catch (err) {
+      errEl.textContent = err.message;
+    }
+  });
+
+  document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
+
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      currentUid = user.uid;
+      document.getElementById('authScreen').style.display = 'none';
+      document.getElementById('appScreen').style.display = 'block';
+      watchUserDoc(user.uid);
+      watchSubs(user.uid);
+    } else {
+      currentUid = null;
+      document.getElementById('authScreen').style.display = 'block';
+      document.getElementById('appScreen').style.display = 'none';
+      if (unsubSubs) unsubSubs();
+    }
+  });
+
+  function watchUserDoc(uid) {
+    onSnapshot(doc(db, 'users', uid), (snap) => {
+      const data = snap.data() || {};
+      const paid = data.plan === 'paid';
+      document.getElementById('planPill').textContent = paid ? 'Plus plan' : 'Free plan';
+      document.getElementById('planPill').classList.toggle('paid', paid);
+      document.getElementById('upgradeBtn').style.display = paid ? 'none' : 'inline-block';
+    });
+  }
+
+  let currentSubs = [];
+  function watchSubs(uid) {
+    const q = query(collection(db, 'users', uid, 'subs'));
+    unsubSubs = onSnapshot(q, (snap) => {
+      currentSubs = [];
+      snap.forEach(d => currentSubs.push({ id: d.id, ...d.data() }));
+      render();
+    });
+  }
+
+  function render() {
+    const total = currentSubs.reduce((s, x) => s + Number(x.price), 0);
+    document.getElementById('totalSpend').textContent = '$' + total.toFixed(2);
+    const list = document.getElementById('subList');
+    if (currentSubs.length === 0) {
+      list.innerHTML = '<div class="empty">No tools added yet.</div>';
+    } else {
+      list.innerHTML = currentSubs.map(s => `
+        <div class="sub-row">
+          <div><b>${escapeHtml(s.name)}</b><div style="font-size:12px;color:var(--ink-soft)">${s.renewDate ? 'renews ' + s.renewDate : ''}</div></div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <div>$${Number(s.price).toFixed(2)}/mo</div>
+            <button class="ghost" onclick="window.removeSub('${s.id}')">Remove</button>
+          </div>
+        </div>`).join('');
+    }
+  }
+  function escapeHtml(str){ const d=document.createElement('div'); d.textContent=str; return d.innerHTML; }
+
+  window.removeSub = async (id) => {
+    await deleteDoc(doc(db, 'users', currentUid, 'subs', id));
+  };
+
+  document.getElementById('addForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = document.getElementById('nameInput').value.trim();
+    const price = parseFloat(document.getElementById('priceInput').value);
+    const renewDate = document.getElementById('dateInput').value;
+    if (!name || isNaN(price)) return;
+    await addDoc(collection(db, 'users', currentUid, 'subs'), { name, price, renewDate });
+    e.target.reset();
+  });
+
+  document.getElementById('upgradeBtn').addEventListener('click', async () => {
+    const createCheckoutSession = httpsCallable(functions, 'createCheckoutSession');
+    try {
+      const result = await createCheckoutSession({
+        successUrl: window.location.href,
+        cancelUrl: window.location.href
+      });
+      window.location.href = result.data.url;
+    } catch (err) {
+      alert('Could not start checkout: ' + err.message);
+    }
+  });
+</script>
+</body>
+</html>
