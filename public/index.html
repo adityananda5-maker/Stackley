@@ -12,32 +12,64 @@
   :root {
     --bg:#EFF5F1; --paper:#FFFFFF; --ink:#241F26; --ink-soft:#75707C; --line:#E3E0E6;
     --coral:#E35D3F; --coral-soft:#FBE6DF; --teal:#2E8B74; --teal-soft:#E1F1EA;
-    --amber:#D9A441; --amber-soft:#FBF0DC; --radius:14px; --radius-sm:9px;
+    --amber:#D9A441; --amber-soft:#FBF0DC; --radius:16px; --radius-sm:10px;
   }
   * { box-sizing:border-box; }
-  body { margin:0; background:var(--bg); color:var(--ink); font-family:'Manrope',sans-serif; }
-  .wrap { max-width:1040px; margin:0 auto; padding:32px 20px 100px; }
-  .wordmark { font-family:'Fraunces',serif; font-size:23px; font-weight:650; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:'Manrope',-apple-system,sans-serif; -webkit-font-smoothing:antialiased; }
+  .wrap { max-width:980px; margin:0 auto; padding:36px 20px 100px; }
+  .wordmark { font-family:'Fraunces',serif; font-size:24px; font-weight:650; letter-spacing:-0.01em; }
   .wordmark span { color:var(--coral); }
-  .panel { background:var(--paper); border:1px solid var(--line); border-radius:var(--radius); padding:26px; margin-bottom:20px; }
-  .panel h2 { font-family:'Fraunces',serif; font-weight:600; font-size:19px; margin:0 0 4px; }
-  .desc { color:var(--ink-soft); font-size:13px; margin-bottom:18px; }
-  input, select { width:100%; font-family:'Manrope'; font-size:14px; padding:10px 12px; border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--bg); color:var(--ink); }
-  button { font-family:'Manrope'; font-weight:700; font-size:13px; padding:10px 16px; border-radius:var(--radius-sm); border:none; cursor:pointer; background:var(--coral); color:white; }
+  .panel { background:var(--paper); border:1px solid var(--line); border-radius:var(--radius); padding:28px; margin-bottom:20px; box-shadow:0 1px 2px rgba(36,31,38,0.04); }
+  .panel h2 { font-family:'Fraunces',serif; font-weight:600; font-size:20px; margin:0 0 4px; }
+  .desc { color:var(--ink-soft); font-size:13.5px; margin-bottom:18px; line-height:1.5; }
+  label { display:block; font-size:12px; color:var(--ink-soft); margin-bottom:6px; font-weight:700; text-transform:uppercase; letter-spacing:0.02em; }
+  input, select {
+    width:100%; font-family:'Manrope'; font-size:15px; padding:12px 14px;
+    border:1.5px solid var(--line); border-radius:var(--radius-sm); background:var(--bg); color:var(--ink);
+  }
+  input:focus, select:focus, button:focus-visible { outline:2px solid var(--coral); outline-offset:1px; border-color:var(--coral); }
+  button {
+    font-family:'Manrope'; font-weight:700; font-size:14px; padding:12px 18px;
+    border-radius:var(--radius-sm); border:none; cursor:pointer; background:var(--coral); color:white;
+    transition:filter 0.15s, transform 0.1s;
+  }
+  button:hover { filter:brightness(0.95); }
+  button:active { transform:scale(0.98); }
+  button:disabled { opacity:0.55; cursor:not-allowed; }
   button.teal { background:var(--teal); }
-  button.ghost { background:transparent; color:var(--ink-soft); border:1px solid var(--line); }
-  .hero-number { font-family:'Fraunces',serif; font-size:clamp(46px,7vw,62px); font-weight:560; }
-  .field { margin-bottom:12px; }
-  .field label { display:block; font-size:12px; color:var(--ink-soft); margin-bottom:5px; font-weight:600; }
-  #authScreen { max-width:380px; margin:80px auto; }
+  button.ghost { background:transparent; color:var(--ink-soft); border:1.5px solid var(--line); }
+  button.google {
+    background:white; color:var(--ink); border:1.5px solid var(--line);
+    display:flex; align-items:center; justify-content:center; gap:10px; width:100%;
+  }
+  .hero-number { font-family:'Fraunces',serif; font-size:clamp(48px,7vw,64px); font-weight:560; letter-spacing:-0.02em; line-height:1; }
+  .field { margin-bottom:16px; }
+  #authScreen { max-width:400px; margin:70px auto 0; }
   #appScreen { display:none; }
   .error { color:var(--coral); font-size:13px; margin-top:8px; }
-  .top { display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; }
-  .plan-pill { font-size:12px; font-weight:700; padding:6px 12px; border-radius:20px; background:var(--ink); color:var(--paper); }
+  .success-msg { color:var(--teal); font-size:13px; margin-top:8px; }
+  .top { display:flex; justify-content:space-between; align-items:center; margin-bottom:26px; }
+  .plan-pill { font-size:12px; font-weight:700; padding:7px 14px; border-radius:20px; background:var(--ink); color:var(--paper); }
   .plan-pill.paid { background:var(--teal); }
-  .sub-row { display:flex; justify-content:space-between; padding:12px 0; border-top:1px solid var(--line); }
+  .divider-row { display:flex; align-items:center; gap:12px; margin:18px 0; color:var(--ink-soft); font-size:12px; }
+  .divider-row::before, .divider-row::after { content:""; flex:1; height:1px; background:var(--line); }
+  .add-form { display:grid; grid-template-columns:2fr 1fr 1fr; gap:12px; align-items:end; }
+  @media (max-width:640px) { .add-form { grid-template-columns:1fr; } }
+  .sub-row { display:flex; justify-content:space-between; align-items:center; padding:14px 0; border-top:1px solid var(--line); gap:12px; }
   .sub-row:first-of-type { border-top:none; }
-  .empty { color:var(--ink-soft); font-size:13px; padding:24px 0; text-align:center; border:1.5px dashed var(--line); border-radius:var(--radius-sm); }
+  .sub-left { display:flex; align-items:center; gap:12px; min-width:0; }
+  .avatar { width:38px; height:38px; border-radius:11px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px; color:white; }
+  .sub-name { font-weight:700; font-size:14.5px; }
+  .sub-meta { color:var(--ink-soft); font-size:12px; margin-top:2px; }
+  .sub-price { font-family:'Fraunces',serif; font-size:16px; white-space:nowrap; }
+  .sub-right { display:flex; align-items:center; gap:14px; }
+  .del-btn { background:none; border:none; color:var(--ink-soft); font-size:12.5px; cursor:pointer; padding:4px; font-family:'Manrope'; font-weight:600; }
+  .del-btn:hover { color:var(--coral); }
+  .empty { color:var(--ink-soft); font-size:13.5px; padding:30px 0; text-align:center; border:1.5px dashed var(--line); border-radius:var(--radius-sm); }
+  .toggle-link { color:var(--coral); font-size:13.5px; font-weight:600; text-decoration:none; cursor:pointer; }
+  .forgot-link { color:var(--ink-soft); font-size:12.5px; text-decoration:none; cursor:pointer; }
+  .forgot-link:hover { color:var(--coral); }
+  datalist { display:none; }
 </style>
 </head>
 <body>
@@ -46,15 +78,26 @@
   <!-- LOGIN / SIGNUP -->
   <div id="authScreen">
     <div class="panel">
-      <div class="wordmark" style="margin-bottom:18px;">stack<span>ley</span></div>
-      <h2 id="authTitle">Log in</h2>
+      <div class="wordmark" style="margin-bottom:20px;">stack<span>ley</span></div>
+      <h2 id="authTitle">Welcome back</h2>
       <div class="desc">See what your AI tools actually cost you.</div>
+
+      <button class="google" id="googleBtn" type="button">
+        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84c-.21 1.12-.84 2.07-1.8 2.71v2.26h2.91c1.7-1.57 2.69-3.88 2.69-6.61z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.91-2.26c-.81.54-1.84.86-3.05.86-2.35 0-4.34-1.58-5.05-3.71H.95v2.33C2.43 15.98 5.48 18 9 18z"/><path fill="#FBBC05" d="M3.95 10.71c-.18-.54-.28-1.11-.28-1.71s.1-1.17.28-1.71V4.96H.95C.35 6.17 0 7.55 0 9s.35 2.83.95 4.04l3-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.51.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0 5.48 0 2.43 2.02.95 4.96l3 2.33C4.66 5.16 6.65 3.58 9 3.58z"/></svg>
+        Continue with Google
+      </button>
+
+      <div class="divider-row">or</div>
+
       <div class="field"><label>Email</label><input type="email" id="authEmail"></div>
       <div class="field"><label>Password</label><input type="password" id="authPassword"></div>
       <button id="authSubmit" style="width:100%;">Log in</button>
       <div class="error" id="authError"></div>
-      <p style="font-size:13px; margin-top:14px;">
-        <a href="#" id="authToggle" style="color:var(--coral);">Need an account? Sign up</a>
+      <div class="success-msg" id="authSuccess"></div>
+
+      <p style="display:flex; justify-content:space-between; margin-top:16px;">
+        <a href="#" class="toggle-link" id="authToggle">Need an account? Sign up</a>
+        <a href="#" class="forgot-link" id="forgotLink">Forgot password?</a>
       </p>
     </div>
   </div>
@@ -63,28 +106,38 @@
   <div id="appScreen">
     <div class="top">
       <div class="wordmark">stack<span>ley</span></div>
-      <div style="display:flex; align-items:center; gap:10px;">
+      <div style="display:flex; align-items:center; gap:12px;">
         <span class="plan-pill" id="planPill">Free plan</span>
         <button class="ghost" id="logoutBtn">Log out</button>
       </div>
     </div>
 
     <div class="panel">
-      <div class="desc" style="margin-bottom:4px;">Total AI spend</div>
+      <div class="desc" style="margin-bottom:6px;">Total AI spend</div>
       <div class="hero-number" id="totalSpend">$0</div>
-      <div style="margin-top:16px;">
+      <div style="margin-top:18px;">
         <button class="teal" id="upgradeBtn">Upgrade to Plus — $6/mo</button>
       </div>
     </div>
 
     <div class="panel">
       <h2>Add a tool</h2>
-      <div class="desc">Name, monthly price, and when it renews.</div>
-      <form id="addForm">
-        <div class="field"><label>Tool name</label><input type="text" id="nameInput" required></div>
-        <div class="field"><label>Price / month ($)</label><input type="number" step="0.01" id="priceInput" required></div>
-        <div class="field"><label>Renews on</label><input type="date" id="dateInput"></div>
-        <button type="submit" id="addBtn">Add tool</button>
+      <div class="desc">Start typing — we'll fill in the price for you if we recognize it.</div>
+      <form class="add-form" id="addForm">
+        <div class="field">
+          <label>Tool name</label>
+          <input type="text" id="nameInput" list="toolOptions" placeholder="e.g. ChatGPT Plus" required autocomplete="off">
+          <datalist id="toolOptions"></datalist>
+        </div>
+        <div class="field">
+          <label>Price / month ($)</label>
+          <input type="number" step="0.01" min="0" id="priceInput" placeholder="20" required>
+        </div>
+        <div class="field">
+          <label>Renews on</label>
+          <input type="date" id="dateInput">
+        </div>
+        <button type="submit" id="addBtn" style="grid-column:1 / -1;">Add tool</button>
       </form>
     </div>
 
@@ -100,27 +153,28 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import {
     getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
-    onAuthStateChanged, signOut
+    onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup,
+    sendPasswordResetEmail
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
   import {
-    getFirestore, doc, setDoc, collection, addDoc, deleteDoc,
+    getFirestore, doc, setDoc, getDoc, collection, addDoc, deleteDoc,
     onSnapshot, query
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  // ====== PASTE YOUR FIREBASE CONFIG HERE ======
+  // ====== PASTE YOUR REAL FIREBASE CONFIG HERE (copy from your current file — don't lose it) ======
   const firebaseConfig = {
-     apiKey: "AIzaSyAf23Z8Fjdhqa75fJ8oY012bPOYarMSmYQ",
+    apiKey: "AIzaSyAf23Z8Fjdhqa75fJ8oY012bPOYarMSmYQ",
   authDomain: "stackley-fa130.firebaseapp.com",
   projectId: "stackley-fa130",
   storageBucket: "stackley-fa130.firebasestorage.app",
   messagingSenderId: "630704972625",
   appId: "1:630704972625:web:b8ec36c68cbd2f89d2e970",
   measurementId: "G-15NCB3QCZV"
-  };
-
+};
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
+  const googleProvider = new GoogleAuthProvider();
 
   // ====== PADDLE SETUP ======
   Paddle.Environment.set("sandbox");
@@ -134,6 +188,42 @@
   });
   const PADDLE_PRICE_ID = "pri_01m2vdbbyezgv71z1v1z6bk224";
 
+  // ====== TOOL DATABASE (for the dropdown autocomplete) ======
+  const TOOL_DB = [
+    {name:"ChatGPT Plus", price:20}, {name:"ChatGPT Pro", price:200},
+    {name:"Claude Pro", price:20}, {name:"Claude Team", price:30},
+    {name:"Perplexity Pro", price:20}, {name:"Gemini Advanced", price:20},
+    {name:"Midjourney Basic", price:10}, {name:"Midjourney Standard", price:30},
+    {name:"Ideogram", price:16}, {name:"Adobe Firefly", price:10},
+    {name:"Leonardo AI", price:12}, {name:"ElevenLabs Starter", price:5},
+    {name:"ElevenLabs Creator", price:22}, {name:"Murf AI", price:29},
+    {name:"Descript", price:24}, {name:"Runway", price:15}, {name:"Pika", price:10},
+    {name:"HeyGen", price:29}, {name:"Synthesia", price:29},
+    {name:"Cursor Pro", price:20}, {name:"GitHub Copilot", price:10},
+    {name:"Windsurf", price:15}, {name:"Replit Core", price:25},
+    {name:"Notion AI", price:10}, {name:"Grammarly Premium", price:12},
+    {name:"Jasper", price:39}, {name:"Copy.ai", price:36},
+    {name:"Suno", price:10}, {name:"Udio", price:10},
+    {name:"Otter.ai", price:17}, {name:"Fireflies.ai", price:19},
+    {name:"Zapier AI", price:20},
+  ];
+  const datalist = document.getElementById('toolOptions');
+  datalist.innerHTML = TOOL_DB.map(t => `<option value="${t.name}">`).join('');
+  document.getElementById('nameInput').addEventListener('input', function() {
+    const match = TOOL_DB.find(t => t.name.toLowerCase() === this.value.toLowerCase());
+    if (match) document.getElementById('priceInput').value = match.price;
+  });
+
+  const CAT_COLORS = ["#E35D3F","#2E8B74","#D9A441","#7A6FF0","#3FA5C4","#C4548E"];
+  function colorFor(name) {
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    return CAT_COLORS[Math.abs(hash) % CAT_COLORS.length];
+  }
+  function initials(name) { return name.trim().slice(0,2).toUpperCase(); }
+  function escapeHtml(str){ const d=document.createElement('div'); d.textContent=str; return d.innerHTML; }
+
+  // ====== AUTH STATE ======
   let isSignup = false;
   let currentUid = null;
   let unsubSubs = null;
@@ -141,16 +231,20 @@
   document.getElementById('authToggle').addEventListener('click', (e) => {
     e.preventDefault();
     isSignup = !isSignup;
-    document.getElementById('authTitle').textContent = isSignup ? 'Sign up' : 'Log in';
+    document.getElementById('authTitle').textContent = isSignup ? 'Create your account' : 'Welcome back';
     document.getElementById('authSubmit').textContent = isSignup ? 'Sign up' : 'Log in';
     document.getElementById('authToggle').textContent = isSignup ? 'Already have an account? Log in' : 'Need an account? Sign up';
+    document.getElementById('authError').textContent = '';
+    document.getElementById('authSuccess').textContent = '';
   });
 
   document.getElementById('authSubmit').addEventListener('click', async () => {
     const email = document.getElementById('authEmail').value.trim();
     const password = document.getElementById('authPassword').value;
     const errEl = document.getElementById('authError');
-    errEl.textContent = '';
+    const okEl = document.getElementById('authSuccess');
+    errEl.textContent = ''; okEl.textContent = '';
+    if (!email || !password) { errEl.textContent = 'Please fill in both fields.'; return; }
     try {
       if (isSignup) {
         const cred = await createUserWithEmailAndPassword(auth, email, password);
@@ -159,9 +253,51 @@
         await signInWithEmailAndPassword(auth, email, password);
       }
     } catch (err) {
-      errEl.textContent = err.message;
+      errEl.textContent = friendlyError(err.code);
     }
   });
+
+  document.getElementById('googleBtn').addEventListener('click', async () => {
+    const errEl = document.getElementById('authError');
+    errEl.textContent = '';
+    try {
+      const cred = await signInWithPopup(auth, googleProvider);
+      const userDoc = await getDoc(doc(db, 'users', cred.user.uid));
+      if (!userDoc.exists()) {
+        await setDoc(doc(db, 'users', cred.user.uid), { email: cred.user.email, plan: 'free' });
+      }
+    } catch (err) {
+      errEl.textContent = friendlyError(err.code);
+    }
+  });
+
+  document.getElementById('forgotLink').addEventListener('click', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('authEmail').value.trim();
+    const errEl = document.getElementById('authError');
+    const okEl = document.getElementById('authSuccess');
+    errEl.textContent = ''; okEl.textContent = '';
+    if (!email) { errEl.textContent = 'Type your email above first, then click "Forgot password?".'; return; }
+    try {
+      await sendPasswordResetEmail(auth, email);
+      okEl.textContent = 'Password reset email sent — check your inbox.';
+    } catch (err) {
+      errEl.textContent = friendlyError(err.code);
+    }
+  });
+
+  function friendlyError(code) {
+    const map = {
+      'auth/email-already-in-use': 'That email already has an account — try logging in instead.',
+      'auth/invalid-email': 'That email address doesn\'t look right.',
+      'auth/weak-password': 'Password should be at least 6 characters.',
+      'auth/user-not-found': 'No account found with that email.',
+      'auth/wrong-password': 'Incorrect password.',
+      'auth/invalid-credential': 'Incorrect email or password.',
+      'auth/popup-closed-by-user': 'Google sign-in was closed before finishing.',
+    };
+    return map[code] || 'Something went wrong — please try again.';
+  }
 
   document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
 
@@ -197,43 +333,71 @@
       currentSubs = [];
       snap.forEach(d => currentSubs.push({ id: d.id, ...d.data() }));
       render();
+    }, (err) => {
+      console.error('Could not load your tools:', err);
     });
   }
 
   function render() {
-    const total = currentSubs.reduce((s, x) => s + Number(x.price), 0);
+    const total = currentSubs.reduce((s, x) => s + Number(x.price || 0), 0);
     document.getElementById('totalSpend').textContent = '$' + total.toFixed(2);
     const list = document.getElementById('subList');
     if (currentSubs.length === 0) {
-      list.innerHTML = '<div class="empty">No tools added yet.</div>';
-    } else {
-      list.innerHTML = currentSubs.map(s => `
-        <div class="sub-row">
-          <div><b>${escapeHtml(s.name)}</b><div style="font-size:12px;color:var(--ink-soft)">${s.renewDate ? 'renews ' + s.renewDate : ''}</div></div>
-          <div style="display:flex; align-items:center; gap:10px;">
-            <div>$${Number(s.price).toFixed(2)}/mo</div>
-            <button class="ghost" onclick="window.removeSub('${s.id}')">Remove</button>
-          </div>
-        </div>`).join('');
+      list.innerHTML = '<div class="empty">No tools added yet — add your first one above.</div>';
+      return;
     }
+    list.innerHTML = currentSubs.map(s => `
+      <div class="sub-row">
+        <div class="sub-left">
+          <div class="avatar" style="background:${colorFor(s.name)}">${initials(s.name)}</div>
+          <div>
+            <div class="sub-name">${escapeHtml(s.name)}</div>
+            <div class="sub-meta">${s.renewDate ? 'renews ' + s.renewDate : 'no renewal date set'}</div>
+          </div>
+        </div>
+        <div class="sub-right">
+          <div class="sub-price">$${Number(s.price).toFixed(2)}/mo</div>
+          <button class="del-btn" onclick="window.removeSub('${s.id}')">Remove</button>
+        </div>
+      </div>`).join('');
   }
-  function escapeHtml(str){ const d=document.createElement('div'); d.textContent=str; return d.innerHTML; }
 
   window.removeSub = async (id) => {
-    await deleteDoc(doc(db, 'users', currentUid, 'subs', id));
+    try {
+      await deleteDoc(doc(db, 'users', currentUid, 'subs', id));
+    } catch (err) {
+      alert('Could not remove that tool: ' + err.message);
+    }
   };
 
+  // ====== ADD TOOL — with visible error handling so failures never fail silently ======
   document.getElementById('addForm').addEventListener('submit', async (e) => {
     e.preventDefault();
+    const addBtn = document.getElementById('addBtn');
     const name = document.getElementById('nameInput').value.trim();
     const price = parseFloat(document.getElementById('priceInput').value);
     const renewDate = document.getElementById('dateInput').value;
-    if (!name || isNaN(price)) return;
-    await addDoc(collection(db, 'users', currentUid, 'subs'), { name, price, renewDate });
-    e.target.reset();
+
+    if (!name) { alert('Please enter a tool name.'); return; }
+    if (isNaN(price) || price < 0) { alert('Please enter a valid price.'); return; }
+    if (!currentUid) { alert('You need to be logged in to add a tool.'); return; }
+
+    addBtn.disabled = true;
+    addBtn.textContent = 'Adding...';
+    try {
+      await addDoc(collection(db, 'users', currentUid, 'subs'), { name, price, renewDate });
+      e.target.reset();
+    } catch (err) {
+      console.error('Add tool failed:', err);
+      alert('Could not add that tool: ' + err.message);
+    } finally {
+      addBtn.disabled = false;
+      addBtn.textContent = 'Add tool';
+    }
   });
 
   document.getElementById('upgradeBtn').addEventListener('click', () => {
+    if (!auth.currentUser) { alert('Please log in first.'); return; }
     Paddle.Checkout.open({
       items: [{ priceId: PADDLE_PRICE_ID, quantity: 1 }],
       customer: { email: auth.currentUser.email },
