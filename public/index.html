@@ -10,16 +10,16 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,450;9..144,560;9..144,650&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg:#EFF5F1; --paper:#FFFFFF; --ink:#241F26; --ink-soft:#75707C; --line:#E3E0E6;
-    --coral:#E35D3F; --coral-soft:#FBE6DF; --teal:#2E8B74; --teal-soft:#E1F1EA;
-    --amber:#D9A441; --amber-soft:#FBF0DC; --radius:16px; --radius-sm:10px;
+    --bg:#EEEEF8; --paper:#FFFFFF; --ink:#211B3B; --ink-soft:#6E6690; --line:#DEDAF2;
+    --violet:#6C4FD1; --violet-soft:#EBE4FB; --blue:#3D5AC7; --blue-soft:#E4E9FA;
+    --gold:#C6922F; --gold-soft:#F6EBD8; --radius:16px; --radius-sm:10px;
   }
   * { box-sizing:border-box; }
   body { margin:0; background:var(--bg); color:var(--ink); font-family:'Manrope',-apple-system,sans-serif; -webkit-font-smoothing:antialiased; }
-  .wrap { max-width:980px; margin:0 auto; padding:36px 20px 100px; }
+  .wrap { max-width:1000px; margin:0 auto; padding:36px 20px 100px; }
   .wordmark { font-family:'Fraunces',serif; font-size:24px; font-weight:650; letter-spacing:-0.01em; }
-  .wordmark span { color:var(--coral); }
-  .panel { background:var(--paper); border:1px solid var(--line); border-radius:var(--radius); padding:28px; margin-bottom:20px; box-shadow:0 1px 2px rgba(36,31,38,0.04); }
+  .wordmark span { color:var(--violet); }
+  .panel { background:var(--paper); border:1px solid var(--line); border-radius:var(--radius); padding:28px; margin-bottom:20px; box-shadow:0 1px 2px rgba(33,27,59,0.05); }
   .panel h2 { font-family:'Fraunces',serif; font-weight:600; font-size:20px; margin:0 0 4px; }
   .desc { color:var(--ink-soft); font-size:13.5px; margin-bottom:18px; line-height:1.5; }
   label { display:block; font-size:12px; color:var(--ink-soft); margin-bottom:6px; font-weight:700; text-transform:uppercase; letter-spacing:0.02em; }
@@ -27,48 +27,55 @@
     width:100%; font-family:'Manrope'; font-size:15px; padding:12px 14px;
     border:1.5px solid var(--line); border-radius:var(--radius-sm); background:var(--bg); color:var(--ink);
   }
-  input:focus, select:focus, button:focus-visible { outline:2px solid var(--coral); outline-offset:1px; border-color:var(--coral); }
+  input:focus, select:focus, button:focus-visible { outline:2px solid var(--violet); outline-offset:1px; border-color:var(--violet); }
   button {
     font-family:'Manrope'; font-weight:700; font-size:14px; padding:12px 18px;
-    border-radius:var(--radius-sm); border:none; cursor:pointer; background:var(--coral); color:white;
+    border-radius:var(--radius-sm); border:none; cursor:pointer; background:var(--violet); color:white;
     transition:filter 0.15s, transform 0.1s;
   }
   button:hover { filter:brightness(0.95); }
   button:active { transform:scale(0.98); }
   button:disabled { opacity:0.55; cursor:not-allowed; }
-  button.teal { background:var(--teal); }
+  button.gold { background:var(--gold); }
   button.ghost { background:transparent; color:var(--ink-soft); border:1.5px solid var(--line); }
   button.google {
     background:white; color:var(--ink); border:1.5px solid var(--line);
     display:flex; align-items:center; justify-content:center; gap:10px; width:100%;
   }
   .hero-number { font-family:'Fraunces',serif; font-size:clamp(48px,7vw,64px); font-weight:560; letter-spacing:-0.02em; line-height:1; }
+  .hero-note { font-size:12px; color:var(--ink-soft); margin-top:6px; }
   .field { margin-bottom:16px; }
   #authScreen { max-width:400px; margin:70px auto 0; }
   #appScreen { display:none; }
-  .error { color:var(--coral); font-size:13px; margin-top:8px; }
-  .success-msg { color:var(--teal); font-size:13px; margin-top:8px; }
+  .error { color:#B84A3F; font-size:13px; margin-top:8px; }
+  .success-msg { color:var(--violet); font-size:13px; margin-top:8px; }
   .top { display:flex; justify-content:space-between; align-items:center; margin-bottom:26px; }
   .plan-pill { font-size:12px; font-weight:700; padding:7px 14px; border-radius:20px; background:var(--ink); color:var(--paper); }
-  .plan-pill.paid { background:var(--teal); }
+  .plan-pill.paid { background:var(--gold); }
   .divider-row { display:flex; align-items:center; gap:12px; margin:18px 0; color:var(--ink-soft); font-size:12px; }
   .divider-row::before, .divider-row::after { content:""; flex:1; height:1px; background:var(--line); }
-  .add-form { display:grid; grid-template-columns:2fr 1fr 1fr; gap:12px; align-items:end; }
-  @media (max-width:640px) { .add-form { grid-template-columns:1fr; } }
-  .sub-row { display:flex; justify-content:space-between; align-items:center; padding:14px 0; border-top:1px solid var(--line); gap:12px; }
+  .add-form { display:grid; grid-template-columns:1.6fr 0.9fr 0.9fr 1.1fr; gap:12px; align-items:end; }
+  @media (max-width:760px) { .add-form { grid-template-columns:1fr 1fr; } }
+  .price-row { display:flex; gap:6px; }
+  .price-row input { flex:1.4; }
+  .price-row select { flex:1; }
+  .date-row { display:flex; gap:6px; }
+  .date-row select { padding:12px 6px; font-size:13.5px; }
+  .sub-row { display:flex; justify-content:space-between; align-items:center; padding:14px 0; border-top:1px solid var(--line); gap:12px; flex-wrap:wrap; }
   .sub-row:first-of-type { border-top:none; }
   .sub-left { display:flex; align-items:center; gap:12px; min-width:0; }
   .avatar { width:38px; height:38px; border-radius:11px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px; color:white; }
   .sub-name { font-weight:700; font-size:14.5px; }
   .sub-meta { color:var(--ink-soft); font-size:12px; margin-top:2px; }
   .sub-price { font-family:'Fraunces',serif; font-size:16px; white-space:nowrap; }
+  .sub-price-usd { font-size:11px; color:var(--ink-soft); }
   .sub-right { display:flex; align-items:center; gap:14px; }
   .del-btn { background:none; border:none; color:var(--ink-soft); font-size:12.5px; cursor:pointer; padding:4px; font-family:'Manrope'; font-weight:600; }
-  .del-btn:hover { color:var(--coral); }
+  .del-btn:hover { color:var(--violet); }
   .empty { color:var(--ink-soft); font-size:13.5px; padding:30px 0; text-align:center; border:1.5px dashed var(--line); border-radius:var(--radius-sm); }
-  .toggle-link { color:var(--coral); font-size:13.5px; font-weight:600; text-decoration:none; cursor:pointer; }
+  .toggle-link { color:var(--violet); font-size:13.5px; font-weight:600; text-decoration:none; cursor:pointer; }
   .forgot-link { color:var(--ink-soft); font-size:12.5px; text-decoration:none; cursor:pointer; }
-  .forgot-link:hover { color:var(--coral); }
+  .forgot-link:hover { color:var(--violet); }
   datalist { display:none; }
 </style>
 </head>
@@ -113,10 +120,11 @@
     </div>
 
     <div class="panel">
-      <div class="desc" style="margin-bottom:6px;">Total AI spend</div>
+      <div class="desc" style="margin-bottom:6px;">Total AI spend / month</div>
       <div class="hero-number" id="totalSpend">$0</div>
+      <div class="hero-note">Converted to USD at approximate rates, for tools priced in other currencies.</div>
       <div style="margin-top:18px;">
-        <button class="teal" id="upgradeBtn">Upgrade to Plus — $6/mo</button>
+        <button class="gold" id="upgradeBtn">Upgrade to Plus — $6/mo</button>
       </div>
     </div>
 
@@ -130,12 +138,34 @@
           <datalist id="toolOptions"></datalist>
         </div>
         <div class="field">
-          <label>Price / month ($)</label>
-          <input type="number" step="0.01" min="0" id="priceInput" placeholder="20" required>
+          <label>Price</label>
+          <div class="price-row">
+            <input type="number" step="0.01" min="0" id="priceInput" placeholder="20" required>
+            <select id="currencyInput">
+              <option value="USD">$ USD</option>
+              <option value="EUR">€ EUR</option>
+              <option value="GBP">£ GBP</option>
+              <option value="INR">₹ INR</option>
+              <option value="CAD">$ CAD</option>
+              <option value="AUD">$ AUD</option>
+              <option value="JPY">¥ JPY</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Billing</label>
+          <select id="cycleInput">
+            <option value="monthly">Monthly</option>
+            <option value="yearly">Yearly</option>
+          </select>
         </div>
         <div class="field">
           <label>Renews on</label>
-          <input type="date" id="dateInput">
+          <div class="date-row">
+            <select id="dayInput"><option value="">Day</option></select>
+            <select id="monthInput"><option value="">Month</option></select>
+            <select id="yearInput"><option value="">Year</option></select>
+          </div>
         </div>
         <button type="submit" id="addBtn" style="grid-column:1 / -1;">Add tool</button>
       </form>
@@ -161,16 +191,17 @@
     onSnapshot, query
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  // ====== PASTE YOUR REAL FIREBASE CONFIG HERE (copy from your current file — don't lose it) ======
+  // ====== PASTE YOUR REAL FIREBASE CONFIG HERE ======
   const firebaseConfig = {
-    apiKey: "AIzaSyAf23Z8Fjdhqa75fJ8oY012bPOYarMSmYQ",
+     apiKey: "AIzaSyAf23Z8Fjdhqa75fJ8oY012bPOYarMSmYQ",
   authDomain: "stackley-fa130.firebaseapp.com",
   projectId: "stackley-fa130",
   storageBucket: "stackley-fa130.firebasestorage.app",
   messagingSenderId: "630704972625",
   appId: "1:630704972625:web:b8ec36c68cbd2f89d2e970",
   measurementId: "G-15NCB3QCZV"
-};
+  };
+
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
@@ -188,7 +219,11 @@
   });
   const PADDLE_PRICE_ID = "pri_01m2vdbbyezgv71z1v1z6bk224";
 
-  // ====== TOOL DATABASE (for the dropdown autocomplete) ======
+  // ====== CURRENCY (approximate static rates to USD — not live) ======
+  const RATES = { USD:1, EUR:1.08, GBP:1.27, INR:0.012, CAD:0.74, AUD:0.66, JPY:0.0067 };
+  const SYMBOLS = { USD:"$", EUR:"€", GBP:"£", INR:"₹", CAD:"$", AUD:"$", JPY:"¥" };
+
+  // ====== TOOL DATABASE ======
   const TOOL_DB = [
     {name:"ChatGPT Plus", price:20}, {name:"ChatGPT Pro", price:200},
     {name:"Claude Pro", price:20}, {name:"Claude Team", price:30},
@@ -211,10 +246,34 @@
   datalist.innerHTML = TOOL_DB.map(t => `<option value="${t.name}">`).join('');
   document.getElementById('nameInput').addEventListener('input', function() {
     const match = TOOL_DB.find(t => t.name.toLowerCase() === this.value.toLowerCase());
-    if (match) document.getElementById('priceInput').value = match.price;
+    if (match) {
+      document.getElementById('priceInput').value = match.price;
+      document.getElementById('currencyInput').value = 'USD';
+    }
   });
 
-  const CAT_COLORS = ["#E35D3F","#2E8B74","#D9A441","#7A6FF0","#3FA5C4","#C4548E"];
+  // ====== DAY / MONTH / YEAR dropdowns ======
+  const dayEl = document.getElementById('dayInput');
+  const monthEl = document.getElementById('monthInput');
+  const yearEl = document.getElementById('yearInput');
+  for (let d = 1; d <= 31; d++) dayEl.innerHTML += `<option value="${d}">${d}</option>`;
+  const MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  MONTH_NAMES.forEach((m, i) => monthEl.innerHTML += `<option value="${i+1}">${m}</option>`);
+  const thisYear = new Date().getFullYear();
+  for (let y = thisYear - 1; y <= thisYear + 10; y++) yearEl.innerHTML += `<option value="${y}">${y}</option>`;
+
+  function getRenewDateString() {
+    const d = dayEl.value, m = monthEl.value, y = yearEl.value;
+    if (!d || !m || !y) return "";
+    return `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+  }
+  function setDateFields(dateStr) {
+    if (!dateStr) { dayEl.value=""; monthEl.value=""; yearEl.value=""; return; }
+    const [y,m,d] = dateStr.split("-");
+    yearEl.value = y; monthEl.value = String(Number(m)); dayEl.value = String(Number(d));
+  }
+
+  const CAT_COLORS = ["#6C4FD1","#3D5AC7","#C6922F","#8A5FE0","#4C6FE3","#B07A2A"];
   function colorFor(name) {
     let hash = 0;
     for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
@@ -222,8 +281,12 @@
   }
   function initials(name) { return name.trim().slice(0,2).toUpperCase(); }
   function escapeHtml(str){ const d=document.createElement('div'); d.textContent=str; return d.innerHTML; }
+  function monthlyUsd(sub) {
+    const monthly = sub.cycle === 'yearly' ? Number(sub.price) / 12 : Number(sub.price);
+    return monthly * (RATES[sub.currency] || 1);
+  }
 
-  // ====== AUTH STATE ======
+  // ====== AUTH ======
   let isSignup = false;
   let currentUid = null;
   let unsubSubs = null;
@@ -268,6 +331,7 @@
       }
     } catch (err) {
       errEl.textContent = friendlyError(err.code);
+      console.error('Google sign-in error:', err.code, err.message);
     }
   });
 
@@ -280,7 +344,7 @@
     if (!email) { errEl.textContent = 'Type your email above first, then click "Forgot password?".'; return; }
     try {
       await sendPasswordResetEmail(auth, email);
-      okEl.textContent = 'Password reset email sent — check your inbox.';
+      okEl.textContent = 'Reset email sent. Open it on this same laptop/browser for the link to work correctly.';
     } catch (err) {
       errEl.textContent = friendlyError(err.code);
     }
@@ -295,8 +359,9 @@
       'auth/wrong-password': 'Incorrect password.',
       'auth/invalid-credential': 'Incorrect email or password.',
       'auth/popup-closed-by-user': 'Google sign-in was closed before finishing.',
+      'auth/unauthorized-domain': 'This site\'s domain isn\'t authorized for Google sign-in yet — add it in Firebase Console → Authentication → Settings → Authorized domains.',
     };
-    return map[code] || 'Something went wrong — please try again.';
+    return map[code] || ('Something went wrong (' + code + ') — please try again.');
   }
 
   document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
@@ -339,15 +404,17 @@
   }
 
   function render() {
-    const total = currentSubs.reduce((s, x) => s + Number(x.price || 0), 0);
+    const total = currentSubs.reduce((s, x) => s + monthlyUsd(x), 0);
     document.getElementById('totalSpend').textContent = '$' + total.toFixed(2);
     const list = document.getElementById('subList');
     if (currentSubs.length === 0) {
       list.innerHTML = '<div class="empty">No tools added yet — add your first one above.</div>';
       return;
     }
-    list.innerHTML = currentSubs.map(s => `
-      <div class="sub-row">
+    list.innerHTML = currentSubs.map(s => {
+      const sym = SYMBOLS[s.currency] || '$';
+      const cyc = s.cycle === 'yearly' ? '/yr' : '/mo';
+      return `<div class="sub-row">
         <div class="sub-left">
           <div class="avatar" style="background:${colorFor(s.name)}">${initials(s.name)}</div>
           <div>
@@ -356,10 +423,14 @@
           </div>
         </div>
         <div class="sub-right">
-          <div class="sub-price">$${Number(s.price).toFixed(2)}/mo</div>
+          <div>
+            <div class="sub-price">${sym}${Number(s.price).toFixed(2)}${cyc}</div>
+            ${s.currency !== 'USD' ? `<div class="sub-price-usd">≈ $${monthlyUsd(s).toFixed(2)}/mo</div>` : ''}
+          </div>
           <button class="del-btn" onclick="window.removeSub('${s.id}')">Remove</button>
         </div>
-      </div>`).join('');
+      </div>`;
+    }).join('');
   }
 
   window.removeSub = async (id) => {
@@ -370,13 +441,14 @@
     }
   };
 
-  // ====== ADD TOOL — with visible error handling so failures never fail silently ======
   document.getElementById('addForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const addBtn = document.getElementById('addBtn');
     const name = document.getElementById('nameInput').value.trim();
     const price = parseFloat(document.getElementById('priceInput').value);
-    const renewDate = document.getElementById('dateInput').value;
+    const currency = document.getElementById('currencyInput').value;
+    const cycle = document.getElementById('cycleInput').value;
+    const renewDate = getRenewDateString();
 
     if (!name) { alert('Please enter a tool name.'); return; }
     if (isNaN(price) || price < 0) { alert('Please enter a valid price.'); return; }
@@ -385,10 +457,11 @@
     addBtn.disabled = true;
     addBtn.textContent = 'Adding...';
     try {
-      await addDoc(collection(db, 'users', currentUid, 'subs'), { name, price, renewDate });
+      await addDoc(collection(db, 'users', currentUid, 'subs'), { name, price, currency, cycle, renewDate });
       e.target.reset();
+      setDateFields("");
     } catch (err) {
-      console.error('Add tool failed:', err);
+      console.error('Add tool failed:', err.code, err.message);
       alert('Could not add that tool: ' + err.message);
     } finally {
       addBtn.disabled = false;
