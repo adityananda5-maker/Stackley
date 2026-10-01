@@ -19,7 +19,7 @@
   .wrap { max-width:1000px; margin:0 auto; padding:36px 20px 100px; }
   .wordmark { font-family:'Fraunces',serif; font-size:24px; font-weight:650; letter-spacing:-0.01em; }
   .wordmark span { color:var(--violet); }
-  .panel { background:var(--paper); border:1px solid var(--line); border-radius:var(--radius); padding:28px; margin-bottom:20px; box-shadow:0 1px 2px rgba(33,27,59,0.05); }
+  .panel { background:var(--paper); border:1px solid var(--line); border-radius:var(--radius); padding:28px; margin-bottom:20px; box-shadow:0 1px 2px rgba(33,27,59,0.05); position:relative; }
   .panel h2 { font-family:'Fraunces',serif; font-weight:600; font-size:20px; margin:0 0 4px; }
   .desc { color:var(--ink-soft); font-size:13.5px; margin-bottom:18px; line-height:1.5; }
   label { display:block; font-size:12px; color:var(--ink-soft); margin-bottom:6px; font-weight:700; text-transform:uppercase; letter-spacing:0.02em; }
@@ -54,8 +54,10 @@
   .plan-pill.paid { background:var(--gold); }
   .divider-row { display:flex; align-items:center; gap:12px; margin:18px 0; color:var(--ink-soft); font-size:12px; }
   .divider-row::before, .divider-row::after { content:""; flex:1; height:1px; background:var(--line); }
-  .add-form { display:grid; grid-template-columns:1.6fr 0.9fr 0.9fr 1.1fr; gap:12px; align-items:end; }
-  @media (max-width:760px) { .add-form { grid-template-columns:1fr 1fr; } }
+  .banner { background:var(--gold-soft); border:1px solid var(--gold); border-radius:var(--radius-sm); padding:13px 16px; margin-bottom:20px; font-size:13.5px; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
+  .banner strong { color:var(--gold); }
+  .add-form { display:grid; grid-template-columns:1.3fr 1fr 1.2fr 0.9fr 1.3fr; gap:12px; align-items:end; }
+  @media (max-width:900px) { .add-form { grid-template-columns:1fr 1fr; } }
   .price-row { display:flex; gap:6px; }
   .price-row input { flex:1.4; }
   .price-row select { flex:1; }
@@ -70,6 +72,7 @@
   .sub-price { font-family:'Fraunces',serif; font-size:16px; white-space:nowrap; }
   .sub-price-usd { font-size:11px; color:var(--ink-soft); }
   .sub-right { display:flex; align-items:center; gap:14px; }
+  .badge-soon { font-size:10.5px; font-weight:700; padding:3px 8px; border-radius:20px; background:var(--gold-soft); color:var(--gold); white-space:nowrap; }
   .del-btn { background:none; border:none; color:var(--ink-soft); font-size:12.5px; cursor:pointer; padding:4px; font-family:'Manrope'; font-weight:600; }
   .del-btn:hover { color:var(--violet); }
   .empty { color:var(--ink-soft); font-size:13.5px; padding:30px 0; text-align:center; border:1.5px dashed var(--line); border-radius:var(--radius-sm); }
@@ -77,6 +80,13 @@
   .forgot-link { color:var(--ink-soft); font-size:12.5px; text-decoration:none; cursor:pointer; }
   .forgot-link:hover { color:var(--violet); }
   datalist { display:none; }
+  .flag { background:var(--blue-soft); border-radius:var(--radius-sm); padding:13px 15px; margin-bottom:10px; font-size:13px; line-height:1.55; }
+  .flag:last-child { margin-bottom:0; }
+  .flag b { color:var(--blue); }
+  .locked { filter:blur(4px); pointer-events:none; user-select:none; }
+  .lock-overlay { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; background:rgba(255,255,255,0.6); border-radius:var(--radius); text-align:center; padding:20px; }
+  .lock-overlay p { font-size:13px; color:var(--ink-soft); max-width:32ch; margin:0; }
+  .lock-title { font-family:'Fraunces',serif; font-weight:600; font-size:16px; }
 </style>
 </head>
 <body>
@@ -119,23 +129,40 @@
       </div>
     </div>
 
+    <div id="renewalBanner"></div>
+
     <div class="panel">
       <div class="desc" style="margin-bottom:6px;">Total AI spend / month</div>
       <div class="hero-number" id="totalSpend">$0</div>
       <div class="hero-note">Converted to USD at approximate rates, for tools priced in other currencies.</div>
-      <div style="margin-top:18px;">
+      <div style="margin-top:18px; display:flex; gap:10px; flex-wrap:wrap;">
         <button class="gold" id="upgradeBtn">Upgrade to Plus — $6/mo</button>
+        <button class="ghost" id="notifyBtn">Enable renewal alerts</button>
       </div>
     </div>
 
     <div class="panel">
       <h2>Add a tool</h2>
-      <div class="desc">Start typing — we'll fill in the price for you if we recognize it.</div>
+      <div class="desc">Start typing — we'll fill in the price and category for you if we recognize it.</div>
       <form class="add-form" id="addForm">
         <div class="field">
           <label>Tool name</label>
           <input type="text" id="nameInput" list="toolOptions" placeholder="e.g. ChatGPT Plus" required autocomplete="off">
           <datalist id="toolOptions"></datalist>
+        </div>
+        <div class="field">
+          <label>Category</label>
+          <select id="categoryInput">
+            <option value="writing">Writing</option>
+            <option value="coding">Coding</option>
+            <option value="image">Image</option>
+            <option value="video">Video</option>
+            <option value="voice">Voice / audio</option>
+            <option value="research">Research / chat</option>
+            <option value="productivity">Productivity</option>
+            <option value="music">Music</option>
+            <option value="other">Other</option>
+          </select>
         </div>
         <div class="field">
           <label>Price</label>
@@ -174,6 +201,17 @@
     <div class="panel">
       <h2>Your stack</h2>
       <div id="subList"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Possible overlap</h2>
+      <div class="desc">Tools that might be serving the same purpose.</div>
+      <div id="wasteList"></div>
+      <div class="lock-overlay" id="wasteLock" style="display:none;">
+        <div class="lock-title">Unlock overlap detection</div>
+        <p>See exactly which tools do the same job, so you can decide what to keep.</p>
+        <button class="gold" id="unlockFromWaste">Upgrade — $6/mo</button>
+      </div>
     </div>
   </div>
 
@@ -218,29 +256,30 @@
     }
   });
   const PADDLE_PRICE_ID = "pri_01m2vdbbyezgv71z1v1z6bk224";
+  const FREE_LIMIT = 4;
 
-  // ====== CURRENCY (approximate static rates to USD — not live) ======
+  // ====== CURRENCY ======
   const RATES = { USD:1, EUR:1.08, GBP:1.27, INR:0.012, CAD:0.74, AUD:0.66, JPY:0.0067 };
   const SYMBOLS = { USD:"$", EUR:"€", GBP:"£", INR:"₹", CAD:"$", AUD:"$", JPY:"¥" };
 
   // ====== TOOL DATABASE ======
   const TOOL_DB = [
-    {name:"ChatGPT Plus", price:20}, {name:"ChatGPT Pro", price:200},
-    {name:"Claude Pro", price:20}, {name:"Claude Team", price:30},
-    {name:"Perplexity Pro", price:20}, {name:"Gemini Advanced", price:20},
-    {name:"Midjourney Basic", price:10}, {name:"Midjourney Standard", price:30},
-    {name:"Ideogram", price:16}, {name:"Adobe Firefly", price:10},
-    {name:"Leonardo AI", price:12}, {name:"ElevenLabs Starter", price:5},
-    {name:"ElevenLabs Creator", price:22}, {name:"Murf AI", price:29},
-    {name:"Descript", price:24}, {name:"Runway", price:15}, {name:"Pika", price:10},
-    {name:"HeyGen", price:29}, {name:"Synthesia", price:29},
-    {name:"Cursor Pro", price:20}, {name:"GitHub Copilot", price:10},
-    {name:"Windsurf", price:15}, {name:"Replit Core", price:25},
-    {name:"Notion AI", price:10}, {name:"Grammarly Premium", price:12},
-    {name:"Jasper", price:39}, {name:"Copy.ai", price:36},
-    {name:"Suno", price:10}, {name:"Udio", price:10},
-    {name:"Otter.ai", price:17}, {name:"Fireflies.ai", price:19},
-    {name:"Zapier AI", price:20},
+    {name:"ChatGPT Plus", price:20, cat:"research"}, {name:"ChatGPT Pro", price:200, cat:"research"},
+    {name:"Claude Pro", price:20, cat:"research"}, {name:"Claude Team", price:30, cat:"research"},
+    {name:"Perplexity Pro", price:20, cat:"research"}, {name:"Gemini Advanced", price:20, cat:"research"},
+    {name:"Midjourney Basic", price:10, cat:"image"}, {name:"Midjourney Standard", price:30, cat:"image"},
+    {name:"Ideogram", price:16, cat:"image"}, {name:"Adobe Firefly", price:10, cat:"image"},
+    {name:"Leonardo AI", price:12, cat:"image"}, {name:"ElevenLabs Starter", price:5, cat:"voice"},
+    {name:"ElevenLabs Creator", price:22, cat:"voice"}, {name:"Murf AI", price:29, cat:"voice"},
+    {name:"Descript", price:24, cat:"video"}, {name:"Runway", price:15, cat:"video"}, {name:"Pika", price:10, cat:"video"},
+    {name:"HeyGen", price:29, cat:"video"}, {name:"Synthesia", price:29, cat:"video"},
+    {name:"Cursor Pro", price:20, cat:"coding"}, {name:"GitHub Copilot", price:10, cat:"coding"},
+    {name:"Windsurf", price:15, cat:"coding"}, {name:"Replit Core", price:25, cat:"coding"},
+    {name:"Notion AI", price:10, cat:"productivity"}, {name:"Grammarly Premium", price:12, cat:"writing"},
+    {name:"Jasper", price:39, cat:"writing"}, {name:"Copy.ai", price:36, cat:"writing"},
+    {name:"Suno", price:10, cat:"music"}, {name:"Udio", price:10, cat:"music"},
+    {name:"Otter.ai", price:17, cat:"productivity"}, {name:"Fireflies.ai", price:19, cat:"productivity"},
+    {name:"Zapier AI", price:20, cat:"productivity"},
   ];
   const datalist = document.getElementById('toolOptions');
   datalist.innerHTML = TOOL_DB.map(t => `<option value="${t.name}">`).join('');
@@ -249,6 +288,7 @@
     if (match) {
       document.getElementById('priceInput').value = match.price;
       document.getElementById('currencyInput').value = 'USD';
+      document.getElementById('categoryInput').value = match.cat;
     }
   });
 
@@ -259,8 +299,9 @@
   for (let d = 1; d <= 31; d++) dayEl.innerHTML += `<option value="${d}">${d}</option>`;
   const MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   MONTH_NAMES.forEach((m, i) => monthEl.innerHTML += `<option value="${i+1}">${m}</option>`);
-  const thisYear = new Date().getFullYear();
-  for (let y = thisYear - 1; y <= thisYear + 10; y++) yearEl.innerHTML += `<option value="${y}">${y}</option>`;
+  const todayDate = new Date();
+  const thisYear = todayDate.getFullYear();
+  for (let y = thisYear; y <= thisYear + 10; y++) yearEl.innerHTML += `<option value="${y}">${y}</option>`;
 
   function getRenewDateString() {
     const d = dayEl.value, m = monthEl.value, y = yearEl.value;
@@ -272,13 +313,14 @@
     const [y,m,d] = dateStr.split("-");
     yearEl.value = y; monthEl.value = String(Number(m)); dayEl.value = String(Number(d));
   }
-
-  const CAT_COLORS = ["#6C4FD1","#3D5AC7","#C6922F","#8A5FE0","#4C6FE3","#B07A2A"];
-  function colorFor(name) {
-    let hash = 0;
-    for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
-    return CAT_COLORS[Math.abs(hash) % CAT_COLORS.length];
+  function daysUntil(dateStr) {
+    const today = new Date(); today.setHours(0,0,0,0);
+    const target = new Date(dateStr + 'T00:00:00');
+    return Math.round((target - today) / 86400000);
   }
+
+  const CAT_COLORS = { writing:"#6C4FD1", coding:"#3D5AC7", image:"#C6922F", video:"#8A5FE0", voice:"#4C6FE3", research:"#B0529C", productivity:"#5C8A3C", music:"#B07A2A", other:"#6E6690" };
+  function colorFor(cat) { return CAT_COLORS[cat] || "#6E6690"; }
   function initials(name) { return name.trim().slice(0,2).toUpperCase(); }
   function escapeHtml(str){ const d=document.createElement('div'); d.textContent=str; return d.innerHTML; }
   function monthlyUsd(sub) {
@@ -289,6 +331,7 @@
   // ====== AUTH ======
   let isSignup = false;
   let currentUid = null;
+  let isPaid = false;
   let unsubSubs = null;
 
   document.getElementById('authToggle').addEventListener('click', (e) => {
@@ -344,7 +387,7 @@
     if (!email) { errEl.textContent = 'Type your email above first, then click "Forgot password?".'; return; }
     try {
       await sendPasswordResetEmail(auth, email);
-      okEl.textContent = 'Reset email sent. Open it on this same laptop/browser for the link to work correctly.';
+      okEl.textContent = 'Reset email sent. Open it on this same browser for the link to work correctly.';
     } catch (err) {
       errEl.textContent = friendlyError(err.code);
     }
@@ -359,7 +402,8 @@
       'auth/wrong-password': 'Incorrect password.',
       'auth/invalid-credential': 'Incorrect email or password.',
       'auth/popup-closed-by-user': 'Google sign-in was closed before finishing.',
-      'auth/unauthorized-domain': 'This site\'s domain isn\'t authorized for Google sign-in yet — add it in Firebase Console → Authentication → Settings → Authorized domains.',
+      'auth/unauthorized-domain': 'This site\'s domain isn\'t authorized for Google sign-in yet.',
+      'auth/operation-not-allowed': 'Google sign-in isn\'t enabled on this project yet — check Authentication → Sign-in method.',
     };
     return map[code] || ('Something went wrong (' + code + ') — please try again.');
   }
@@ -384,10 +428,11 @@
   function watchUserDoc(uid) {
     onSnapshot(doc(db, 'users', uid), (snap) => {
       const data = snap.data() || {};
-      const paid = data.plan === 'paid';
-      document.getElementById('planPill').textContent = paid ? 'Plus plan' : 'Free plan';
-      document.getElementById('planPill').classList.toggle('paid', paid);
-      document.getElementById('upgradeBtn').style.display = paid ? 'none' : 'inline-block';
+      isPaid = data.plan === 'paid';
+      document.getElementById('planPill').textContent = isPaid ? 'Plus plan' : 'Free plan';
+      document.getElementById('planPill').classList.toggle('paid', isPaid);
+      document.getElementById('upgradeBtn').style.display = isPaid ? 'none' : 'inline-block';
+      render();
     });
   }
 
@@ -398,6 +443,7 @@
       currentSubs = [];
       snap.forEach(d => currentSubs.push({ id: d.id, ...d.data() }));
       render();
+      setTimeout(checkAndNotify, 600);
     }, (err) => {
       console.error('Could not load your tools:', err);
     });
@@ -406,31 +452,57 @@
   function render() {
     const total = currentSubs.reduce((s, x) => s + monthlyUsd(x), 0);
     document.getElementById('totalSpend').textContent = '$' + total.toFixed(2);
+
+    const soon = currentSubs.filter(s => s.renewDate && daysUntil(s.renewDate) <= 7 && daysUntil(s.renewDate) >= 0);
+    const bannerEl = document.getElementById('renewalBanner');
+    bannerEl.innerHTML = soon.length
+      ? `<div class="banner"><span><strong>${soon.length} tool${soon.length>1?'s':''}</strong> renewing within 7 days: ${soon.map(s=>escapeHtml(s.name)).join(', ')}</span></div>`
+      : '';
+
     const list = document.getElementById('subList');
     if (currentSubs.length === 0) {
       list.innerHTML = '<div class="empty">No tools added yet — add your first one above.</div>';
-      return;
+    } else {
+      list.innerHTML = currentSubs.map(s => {
+        const sym = SYMBOLS[s.currency] || '$';
+        const cyc = s.cycle === 'yearly' ? '/yr' : '/mo';
+        const d = s.renewDate ? daysUntil(s.renewDate) : null;
+        const soonTag = d !== null && d <= 7 && d >= 0;
+        return `<div class="sub-row">
+          <div class="sub-left">
+            <div class="avatar" style="background:${colorFor(s.category)}">${initials(s.name)}</div>
+            <div>
+              <div class="sub-name">${escapeHtml(s.name)}</div>
+              <div class="sub-meta">${s.category || 'other'}${s.renewDate ? ' · renews ' + s.renewDate : ''}</div>
+            </div>
+          </div>
+          <div class="sub-right">
+            ${soonTag ? '<span class="badge-soon">renews soon</span>' : ''}
+            <div>
+              <div class="sub-price">${sym}${Number(s.price).toFixed(2)}${cyc}</div>
+              ${s.currency !== 'USD' ? `<div class="sub-price-usd">≈ $${monthlyUsd(s).toFixed(2)}/mo</div>` : ''}
+            </div>
+            <button class="del-btn" onclick="window.removeSub('${s.id}')">Remove</button>
+          </div>
+        </div>`;
+      }).join('');
     }
-    list.innerHTML = currentSubs.map(s => {
-      const sym = SYMBOLS[s.currency] || '$';
-      const cyc = s.cycle === 'yearly' ? '/yr' : '/mo';
-      return `<div class="sub-row">
-        <div class="sub-left">
-          <div class="avatar" style="background:${colorFor(s.name)}">${initials(s.name)}</div>
-          <div>
-            <div class="sub-name">${escapeHtml(s.name)}</div>
-            <div class="sub-meta">${s.renewDate ? 'renews ' + s.renewDate : 'no renewal date set'}</div>
-          </div>
-        </div>
-        <div class="sub-right">
-          <div>
-            <div class="sub-price">${sym}${Number(s.price).toFixed(2)}${cyc}</div>
-            ${s.currency !== 'USD' ? `<div class="sub-price-usd">≈ $${monthlyUsd(s).toFixed(2)}/mo</div>` : ''}
-          </div>
-          <button class="del-btn" onclick="window.removeSub('${s.id}')">Remove</button>
-        </div>
-      </div>`;
-    }).join('');
+
+    const wasteEl = document.getElementById('wasteList');
+    document.getElementById('wasteLock').style.display = isPaid ? 'none' : 'flex';
+    wasteEl.classList.toggle('locked', !isPaid);
+    const grouped = {};
+    currentSubs.forEach(s => { const c = s.category || 'other'; (grouped[c] = grouped[c] || []).push(s); });
+    const flags = Object.entries(grouped).filter(([c, l]) => l.length >= 2 && c !== 'other');
+    if (flags.length === 0) {
+      wasteEl.innerHTML = '<div class="empty">No overlaps detected yet.</div>';
+    } else {
+      wasteEl.innerHTML = flags.map(([cat, l]) => {
+        const names = l.map(s => s.name).join(' and ');
+        const combined = l.reduce((s,x) => s + monthlyUsd(x), 0);
+        return `<div class="flag"><b>${escapeHtml(names)}</b> are both tagged "${cat}" — $${combined.toFixed(2)}/mo combined. Worth checking if one covers what you need from both.</div>`;
+      }).join('');
+    }
   }
 
   window.removeSub = async (id) => {
@@ -441,10 +513,34 @@
     }
   };
 
+  document.getElementById('notifyBtn').addEventListener('click', async () => {
+    if (!('Notification' in window)) { alert('Your browser does not support notifications.'); return; }
+    const perm = await Notification.requestPermission();
+    if (perm === 'granted') {
+      document.getElementById('notifyBtn').textContent = 'Alerts enabled ✓';
+      checkAndNotify();
+    }
+  });
+  function checkAndNotify() {
+    if (!('Notification' in window) || Notification.permission !== 'granted') return;
+    currentSubs.forEach(s => {
+      if (!s.renewDate) return;
+      const d = daysUntil(s.renewDate);
+      if (d >= 0 && d <= 3) {
+        new Notification('Stackley', { body: `${s.name} renews in ${d === 0 ? 'today' : d + ' day(s)'}` });
+      }
+    });
+  }
+
+  document.getElementById('unlockFromWaste').addEventListener('click', () => {
+    document.getElementById('upgradeBtn').click();
+  });
+
   document.getElementById('addForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const addBtn = document.getElementById('addBtn');
     const name = document.getElementById('nameInput').value.trim();
+    const category = document.getElementById('categoryInput').value;
     const price = parseFloat(document.getElementById('priceInput').value);
     const currency = document.getElementById('currencyInput').value;
     const cycle = document.getElementById('cycleInput').value;
@@ -453,11 +549,23 @@
     if (!name) { alert('Please enter a tool name.'); return; }
     if (isNaN(price) || price < 0) { alert('Please enter a valid price.'); return; }
     if (!currentUid) { alert('You need to be logged in to add a tool.'); return; }
+    if (renewDate) {
+      const todayStr = new Date().toISOString().slice(0,10);
+      if (renewDate < todayStr) {
+        alert('That renewal date has already passed — please pick today or a future date.');
+        return;
+      }
+    }
+    if (!isPaid && currentSubs.length >= FREE_LIMIT) {
+      alert(`The free plan tracks up to ${FREE_LIMIT} tools. Upgrade to Plus to add unlimited tools.`);
+      document.getElementById('upgradeBtn').click();
+      return;
+    }
 
     addBtn.disabled = true;
     addBtn.textContent = 'Adding...';
     try {
-      await addDoc(collection(db, 'users', currentUid, 'subs'), { name, price, currency, cycle, renewDate });
+      await addDoc(collection(db, 'users', currentUid, 'subs'), { name, category, price, currency, cycle, renewDate });
       e.target.reset();
       setDateFields("");
     } catch (err) {
