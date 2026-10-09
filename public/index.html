@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Stackley — see what your AI tools actually cost you</title>
-<script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,450;9..144,560;9..144,650&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -19,7 +18,7 @@
   .wrap { max-width:1000px; margin:0 auto; padding:36px 20px 100px; }
   .wordmark { font-family:'Fraunces',serif; font-size:24px; font-weight:650; letter-spacing:-0.01em; }
   .wordmark span { color:var(--violet); }
-  .panel { background:var(--paper); border:1px solid var(--line); border-radius:var(--radius); padding:28px; margin-bottom:20px; box-shadow:0 1px 2px rgba(33,27,59,0.05); position:relative; }
+  .panel { background:var(--paper); border:1px solid var(--line); border-radius:var(--radius); padding:28px; margin-bottom:20px; box-shadow:0 1px 2px rgba(33,27,59,0.05); }
   .panel h2 { font-family:'Fraunces',serif; font-weight:600; font-size:20px; margin:0 0 4px; }
   .desc { color:var(--ink-soft); font-size:13.5px; margin-bottom:18px; line-height:1.5; }
   label { display:block; font-size:12px; color:var(--ink-soft); margin-bottom:6px; font-weight:700; text-transform:uppercase; letter-spacing:0.02em; }
@@ -36,7 +35,6 @@
   button:hover { filter:brightness(0.95); }
   button:active { transform:scale(0.98); }
   button:disabled { opacity:0.55; cursor:not-allowed; }
-  button.gold { background:var(--gold); }
   button.ghost { background:transparent; color:var(--ink-soft); border:1.5px solid var(--line); }
   button.google {
     background:white; color:var(--ink); border:1.5px solid var(--line);
@@ -50,8 +48,6 @@
   .error { color:#B84A3F; font-size:13px; margin-top:8px; }
   .success-msg { color:var(--violet); font-size:13px; margin-top:8px; }
   .top { display:flex; justify-content:space-between; align-items:center; margin-bottom:26px; }
-  .plan-pill { font-size:12px; font-weight:700; padding:7px 14px; border-radius:20px; background:var(--ink); color:var(--paper); }
-  .plan-pill.paid { background:var(--gold); }
   .divider-row { display:flex; align-items:center; gap:12px; margin:18px 0; color:var(--ink-soft); font-size:12px; }
   .divider-row::before, .divider-row::after { content:""; flex:1; height:1px; background:var(--line); }
   .banner { background:var(--gold-soft); border:1px solid var(--gold); border-radius:var(--radius-sm); padding:13px 16px; margin-bottom:20px; font-size:13.5px; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
@@ -83,10 +79,6 @@
   .flag { background:var(--blue-soft); border-radius:var(--radius-sm); padding:13px 15px; margin-bottom:10px; font-size:13px; line-height:1.55; }
   .flag:last-child { margin-bottom:0; }
   .flag b { color:var(--blue); }
-  .locked { filter:blur(4px); pointer-events:none; user-select:none; }
-  .lock-overlay { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; background:rgba(255,255,255,0.6); border-radius:var(--radius); text-align:center; padding:20px; }
-  .lock-overlay p { font-size:13px; color:var(--ink-soft); max-width:32ch; margin:0; }
-  .lock-title { font-family:'Fraunces',serif; font-weight:600; font-size:16px; }
 </style>
 </head>
 <body>
@@ -123,10 +115,7 @@
   <div id="appScreen">
     <div class="top">
       <div class="wordmark">stack<span>ley</span></div>
-      <div style="display:flex; align-items:center; gap:12px;">
-        <span class="plan-pill" id="planPill">Free plan</span>
-        <button class="ghost" id="logoutBtn">Log out</button>
-      </div>
+      <button class="ghost" id="logoutBtn">Log out</button>
     </div>
 
     <div id="renewalBanner"></div>
@@ -135,15 +124,14 @@
       <div class="desc" style="margin-bottom:6px;">Total AI spend / month</div>
       <div class="hero-number" id="totalSpend">$0</div>
       <div class="hero-note">Converted to USD at approximate rates, for tools priced in other currencies.</div>
-      <div style="margin-top:18px; display:flex; gap:10px; flex-wrap:wrap;">
-        <button class="gold" id="upgradeBtn">Upgrade to Plus — $6/mo</button>
+      <div style="margin-top:18px;">
         <button class="ghost" id="notifyBtn">Enable renewal alerts</button>
       </div>
     </div>
 
     <div class="panel">
       <h2>Add a tool</h2>
-      <div class="desc">Start typing — we'll fill in the price and category for you if we recognize it.</div>
+      <div class="desc">Start typing — we'll fill in the price and category for you if we recognize it. All fields are required.</div>
       <form class="add-form" id="addForm">
         <div class="field">
           <label>Tool name</label>
@@ -187,11 +175,11 @@
           </select>
         </div>
         <div class="field">
-          <label>Renews on</label>
+          <label>Renews on *</label>
           <div class="date-row">
-            <select id="dayInput"><option value="">Day</option></select>
-            <select id="monthInput"><option value="">Month</option></select>
-            <select id="yearInput"><option value="">Year</option></select>
+            <select id="dayInput" required><option value="">Day</option></select>
+            <select id="monthInput" required><option value="">Month</option></select>
+            <select id="yearInput" required><option value="">Year</option></select>
           </div>
         </div>
         <button type="submit" id="addBtn" style="grid-column:1 / -1;">Add tool</button>
@@ -207,11 +195,6 @@
       <h2>Possible overlap</h2>
       <div class="desc">Tools that might be serving the same purpose.</div>
       <div id="wasteList"></div>
-      <div class="lock-overlay" id="wasteLock" style="display:none;">
-        <div class="lock-title">Unlock overlap detection</div>
-        <p>See exactly which tools do the same job, so you can decide what to keep.</p>
-        <button class="gold" id="unlockFromWaste">Upgrade — $6/mo</button>
-      </div>
     </div>
   </div>
 
@@ -231,32 +214,18 @@
 
   // ====== PASTE YOUR REAL FIREBASE CONFIG HERE ======
   const firebaseConfig = {
-     apiKey: "AIzaSyAf23Z8Fjdhqa75fJ8oY012bPOYarMSmYQ",
-  authDomain: "stackley-fa130.firebaseapp.com",
-  projectId: "stackley-fa130",
-  storageBucket: "stackley-fa130.firebasestorage.app",
-  messagingSenderId: "630704972625",
-  appId: "1:630704972625:web:b8ec36c68cbd2f89d2e970",
-  measurementId: "G-15NCB3QCZV"
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT",
+    storageBucket: "YOUR_PROJECT.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
   };
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
   const googleProvider = new GoogleAuthProvider();
-
-  // ====== PADDLE SETUP ======
-  Paddle.Environment.set("sandbox");
-  Paddle.Initialize({
-    token: "test_6b3e64707b584b7f27cefdb7371",
-    eventCallback: function (data) {
-      if (data.name === "checkout.completed") {
-        alert("Thanks! Your upgrade is processing — this page will update shortly.");
-      }
-    }
-  });
-  const PADDLE_PRICE_ID = "pri_01m2vdbbyezgv71z1v1z6bk224";
-  const FREE_LIMIT = 4;
 
   // ====== CURRENCY ======
   const RATES = { USD:1, EUR:1.08, GBP:1.27, INR:0.012, CAD:0.74, AUD:0.66, JPY:0.0067 };
@@ -299,8 +268,7 @@
   for (let d = 1; d <= 31; d++) dayEl.innerHTML += `<option value="${d}">${d}</option>`;
   const MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   MONTH_NAMES.forEach((m, i) => monthEl.innerHTML += `<option value="${i+1}">${m}</option>`);
-  const todayDate = new Date();
-  const thisYear = todayDate.getFullYear();
+  const thisYear = new Date().getFullYear();
   for (let y = thisYear; y <= thisYear + 10; y++) yearEl.innerHTML += `<option value="${y}">${y}</option>`;
 
   function getRenewDateString() {
@@ -312,6 +280,10 @@
     if (!dateStr) { dayEl.value=""; monthEl.value=""; yearEl.value=""; return; }
     const [y,m,d] = dateStr.split("-");
     yearEl.value = y; monthEl.value = String(Number(m)); dayEl.value = String(Number(d));
+  }
+  function todayLocalString() {
+    const t = new Date();
+    return `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`;
   }
   function daysUntil(dateStr) {
     const today = new Date(); today.setHours(0,0,0,0);
@@ -331,7 +303,6 @@
   // ====== AUTH ======
   let isSignup = false;
   let currentUid = null;
-  let isPaid = false;
   let unsubSubs = null;
 
   document.getElementById('authToggle').addEventListener('click', (e) => {
@@ -354,7 +325,7 @@
     try {
       if (isSignup) {
         const cred = await createUserWithEmailAndPassword(auth, email, password);
-        await setDoc(doc(db, 'users', cred.user.uid), { email, plan: 'free' });
+        await setDoc(doc(db, 'users', cred.user.uid), { email });
       } else {
         await signInWithEmailAndPassword(auth, email, password);
       }
@@ -370,7 +341,7 @@
       const cred = await signInWithPopup(auth, googleProvider);
       const userDoc = await getDoc(doc(db, 'users', cred.user.uid));
       if (!userDoc.exists()) {
-        await setDoc(doc(db, 'users', cred.user.uid), { email: cred.user.email, plan: 'free' });
+        await setDoc(doc(db, 'users', cred.user.uid), { email: cred.user.email });
       }
     } catch (err) {
       errEl.textContent = friendlyError(err.code);
@@ -415,7 +386,6 @@
       currentUid = user.uid;
       document.getElementById('authScreen').style.display = 'none';
       document.getElementById('appScreen').style.display = 'block';
-      watchUserDoc(user.uid);
       watchSubs(user.uid);
     } else {
       currentUid = null;
@@ -424,17 +394,6 @@
       if (unsubSubs) unsubSubs();
     }
   });
-
-  function watchUserDoc(uid) {
-    onSnapshot(doc(db, 'users', uid), (snap) => {
-      const data = snap.data() || {};
-      isPaid = data.plan === 'paid';
-      document.getElementById('planPill').textContent = isPaid ? 'Plus plan' : 'Free plan';
-      document.getElementById('planPill').classList.toggle('paid', isPaid);
-      document.getElementById('upgradeBtn').style.display = isPaid ? 'none' : 'inline-block';
-      render();
-    });
-  }
 
   let currentSubs = [];
   function watchSubs(uid) {
@@ -489,8 +448,6 @@
     }
 
     const wasteEl = document.getElementById('wasteList');
-    document.getElementById('wasteLock').style.display = isPaid ? 'none' : 'flex';
-    wasteEl.classList.toggle('locked', !isPaid);
     const grouped = {};
     currentSubs.forEach(s => { const c = s.category || 'other'; (grouped[c] = grouped[c] || []).push(s); });
     const flags = Object.entries(grouped).filter(([c, l]) => l.length >= 2 && c !== 'other');
@@ -513,6 +470,7 @@
     }
   };
 
+  // ====== RENEWAL NOTIFICATIONS ======
   document.getElementById('notifyBtn').addEventListener('click', async () => {
     if (!('Notification' in window)) { alert('Your browser does not support notifications.'); return; }
     const perm = await Notification.requestPermission();
@@ -527,15 +485,12 @@
       if (!s.renewDate) return;
       const d = daysUntil(s.renewDate);
       if (d >= 0 && d <= 3) {
-        new Notification('Stackley', { body: `${s.name} renews in ${d === 0 ? 'today' : d + ' day(s)'}` });
+        new Notification('Stackley', { body: `${s.name} renews ${d === 0 ? 'today' : 'in ' + d + ' day(s)'}` });
       }
     });
   }
 
-  document.getElementById('unlockFromWaste').addEventListener('click', () => {
-    document.getElementById('upgradeBtn').click();
-  });
-
+  // ====== ADD TOOL ======
   document.getElementById('addForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const addBtn = document.getElementById('addBtn');
@@ -544,21 +499,25 @@
     const price = parseFloat(document.getElementById('priceInput').value);
     const currency = document.getElementById('currencyInput').value;
     const cycle = document.getElementById('cycleInput').value;
-    const renewDate = getRenewDateString();
 
     if (!name) { alert('Please enter a tool name.'); return; }
     if (isNaN(price) || price < 0) { alert('Please enter a valid price.'); return; }
     if (!currentUid) { alert('You need to be logged in to add a tool.'); return; }
-    if (renewDate) {
-      const todayStr = new Date().toISOString().slice(0,10);
-      if (renewDate < todayStr) {
-        alert('That renewal date has already passed — please pick today or a future date.');
-        return;
-      }
+
+    // Date must be fully filled in
+    if (!dayEl.value || !monthEl.value || !yearEl.value) {
+      alert('Please choose the full renewal date — day, month and year.');
+      return;
     }
-    if (!isPaid && currentSubs.length >= FREE_LIMIT) {
-      alert(`The free plan tracks up to ${FREE_LIMIT} tools. Upgrade to Plus to add unlimited tools.`);
-      document.getElementById('upgradeBtn').click();
+    const d = Number(dayEl.value), m = Number(monthEl.value), y = Number(yearEl.value);
+    const test = new Date(y, m - 1, d);
+    if (test.getFullYear() !== y || test.getMonth() !== m - 1 || test.getDate() !== d) {
+      alert("That date doesn't exist (for example, 31 February). Please check the day and month.");
+      return;
+    }
+    const renewDate = getRenewDateString();
+    if (renewDate < todayLocalString()) {
+      alert('That renewal date has already passed — please pick today or a future date.');
       return;
     }
 
@@ -575,15 +534,6 @@
       addBtn.disabled = false;
       addBtn.textContent = 'Add tool';
     }
-  });
-
-  document.getElementById('upgradeBtn').addEventListener('click', () => {
-    if (!auth.currentUser) { alert('Please log in first.'); return; }
-    Paddle.Checkout.open({
-      items: [{ priceId: PADDLE_PRICE_ID, quantity: 1 }],
-      customer: { email: auth.currentUser.email },
-      customData: { uid: currentUid }
-    });
   });
 </script>
 </body>
